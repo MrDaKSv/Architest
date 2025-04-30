@@ -7,6 +7,7 @@ package chnu._3.myproject.controller;/*
 */
 
 import chnu._3.myproject.model.Duck;
+import chnu._3.myproject.request.DuckCreateRequest;
 import chnu._3.myproject.service.DuckService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +29,9 @@ public class DuckRestController {
 
     @PostMapping
     public Duck insert(@RequestBody Duck duck) { return duckService.create(duck); }
+
+    @PostMapping("/dto")
+    public Duck insert(@RequestBody DuckCreateRequest request) { return duckService.create(request); }
 
     @PutMapping("/{id}")
     public Duck edit(@PathVariable String id, @RequestBody Duck updatedDuck) {

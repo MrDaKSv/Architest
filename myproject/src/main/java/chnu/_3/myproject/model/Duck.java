@@ -11,6 +11,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 
 @Data
@@ -28,6 +30,9 @@ public class Duck {
     private String name;
     private String code;
     private String description;
+
+    private LocalDateTime createDate;
+    private List<LocalDateTime> updateDate;
 
     public Duck(String name, String code, String description) {
         this.name = name;

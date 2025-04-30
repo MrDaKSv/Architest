@@ -9,11 +9,14 @@ package chnu._3.myproject.service;/*
 
 import chnu._3.myproject.model.Duck;
 import chnu._3.myproject.repository.DuckRepository;
+import chnu._3.myproject.request.DuckCreateRequest;
+import chnu._3.myproject.request.DuckUpdateRequest;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,11 +33,13 @@ public class DuckService {
         ducks.add(new Duck("duck3", "000003", "duck description3"));
     }
 
-    //@PostConstruct
+    @PostConstruct
     void init() {
         duckRepository.deleteAll();
         duckRepository.saveAll(ducks);
     }
+
+
 
     //CRUD
 
@@ -49,6 +54,15 @@ public class DuckService {
     public Duck create(Duck duck) {
         return duckRepository.save(duck);
     }
+
+    public Duck create(DuckCreateRequest request){
+        Duck duck = mapToDuck(request);
+        duck.setCreateDate(LocalDateTime.now());
+        duck.setUpdateDate(new ArrayList<LocalDateTime>());
+        return duckRepository.save(duck);
+    }
+
+
 
     public Duck update(String id, Duck updatedDuck) {
         // Перевіряємо, чи існує качка з таким id
@@ -66,8 +80,31 @@ public class DuckService {
         return null;
     }
 
+    private Duck mapToDuck(DuckCreateRequest request){
+        return new Duck(request.name(), request.code(), request.description());
+    }
+
+    public Duck update(DuckUpdateRequest request){
+        Duck duckPersisted = duckRepository.findById(request.id()).orElse(null);
+        if(duckPersisted != null) {
+            List<LocalDateTime> updateDates = duckPersisted.getUpdateDate();
+            updateDates.add(LocalDateTime.now());
+            Duck duckToUpdate =
+                    Duck.builder()
+                            .id(request.id())
+                            .name(request.name())
+                            .code(request.code())
+                            .description(request.description())
+                            .createDate(duckPersisted.getCreateDate())
+                            .updateDate(updateDates)
+                            .build();
+            return duckRepository.save(duckToUpdate);
+
+        }
+        return null;
+    }
+
     public void delById(String id) {
         duckRepository.deleteById(id);
     }
 }
-
